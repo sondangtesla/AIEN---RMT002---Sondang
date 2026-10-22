@@ -5,7 +5,7 @@ Pertanyaan dijalankan lewat UI Streamlit (`ui/app.py`) → engine (`engine.api.m
 
 | Setting | Nilai |
 |---|---|
-| `ANALYTICS_DB_TARGET` | `local` (Gold hasil pipeline kami, bukan sample Neon) |
+| `ANALYTICS_DB_TARGET` | `local` (Gold hasil pipeline ini, bukan sample Neon) |
 | `NL2SQL_PROVIDER` | `mock` (SQL benchmark bawaan engine) |
 | Benchmark | `uv run python -m engine.benchmarks.run_benchmark` → **25/25 PASS** |
 
@@ -143,7 +143,7 @@ SELECT metric_date, stockout_rate FROM gold.executive_kpis_daily ORDER BY metric
 90 baris, **semua 0.0000**.
 
 **Cek silang & penjelasan:** `product_daily.stockout_flag` = TRUE di 0 dari
-7,200 product-hari, dan tidak ada inventory NULL. Kami mendefinisikan stockout
+7,200 product-hari, dan tidak ada inventory NULL. Stockout didefinisikan
 sebagai **total stok tersedia product di semua lokasi = 0** (keputusan PD7).
 Di level lokasi sebenarnya ada **424 baris** stok 0 (**416 product-hari**), tapi
 selalu ada lokasi lain yang masih punya stok. Ini **limitation definisi**, bukan
@@ -177,9 +177,9 @@ yang **payment-nya captured**. Hasil keduanya:
 tidak pernah di-capture): **1,215 order** ikut di penyebut versi engine, dan
 **254** di antaranya tetap punya refund `COMPLETED` sehingga ikut di
 pembilang. Definisi kontrak mengecualikan keduanya (1,991 / 10,000 vs
-1,737 / 8,785). Anomali
-ini sudah ditandai quality gate kami sebagai WARN (`silver_refund_*`, 254
-baris) dan perlakuannya didokumentasikan (keputusan G0-8).
+1,737 / 8,785). Anomali ini sudah ditandai quality gate sebagai WARN
+(`silver_refund_*`, 254 baris) dan perlakuannya didokumentasikan (keputusan
+G0-8).
 
 **Pelajaran:** Gold yang benar belum menjamin jawaban yang benar. SQL engine
 yang tampak masuk akal bisa memakai definisi metric yang berbeda dari kontrak.
@@ -191,8 +191,8 @@ Untuk refund rate, sumber yang konsisten dengan kontrak adalah
 ## Temuan tambahan — review 25 SQL benchmark terhadap kontrak
 
 `run_benchmark.py` menandai PASS kalau query **jalan tanpa error**, bukan kalau
-jawabannya benar. Karena itu ke-25 SQL mock (`engine/llm/providers.py`) kami
-baca satu per satu terhadap definisi metric di README §4 dan
+jawabannya benar. Karena itu ke-25 SQL mock (`engine/llm/providers.py`)
+dibaca satu per satu terhadap definisi metric di README §4 dan
 `engine/llm/catalog.py`, lalu setiap kecurigaan dibuktikan dengan query ke Gold
 lokal. Penomoran di bawah memakai ID benchmark (`questions.json`); Q7 di atas =
 benchmark **Q02**.
@@ -254,7 +254,7 @@ Akar masalahnya ada di kontrak: `product_daily` hanya menyimpan
 `refunded_units`, tidak menyimpan nilai refund, dan `order_360` tidak punya
 kategori. Nilai refund per kategori **tidak bisa dijawab tepat dari Gold**;
 yang tersedia adalah `SUM(refunded_units)` per kategori (satuan unit).
-Apakah ranking kategorinya ikut berubah **belum kami buktikan** (butuh nilai
+Apakah ranking kategorinya ikut berubah **belum dibuktikan** (butuh nilai
 refund per kategori dari Silver).
 
 ### Q15 — Which orders were fully refunded?
